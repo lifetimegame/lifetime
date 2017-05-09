@@ -52,7 +52,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   player: {fileID: 0}
-  groundPrefab: {fileID: 1010505773109790, guid: 261cf31e8e0e444f7ac0e860f5036e0a,
+  chuckCount: 2
+  groundPrefab: {fileID: 1347628523412324, guid: 261cf31e8e0e444f7ac0e860f5036e0a,
     type: 2}
-  activeChunkCount: 14
+  obstaclePrefab: {fileID: 1478048190126360, guid: df115d8d171884d628439ba3ab9c13a5,
+    type: 2}
+  obstacleInterval: 2
+  obstacleSpawnDistance: 16
   respawnDistance: 14

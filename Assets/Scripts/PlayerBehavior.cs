@@ -4,18 +4,24 @@ using UnityEngine;
 using UnityEngine.UI;
 
 public class PlayerBehavior : MonoBehaviour {
-	public float movementSpeed = 1.0f;
+	public float movementSpeed = 10.0f;
 
-	private Rigidbody2D rb;
+	private Rigidbody rb;
 
 	void Start () {
-		rb = GetComponent<Rigidbody2D> ();
+		rb = GetComponent<Rigidbody> ();
 		Vector3 vel = rb.velocity;
 		vel.x = movementSpeed;
 		rb.velocity = vel;
 	}
 
 	void Update () {
+		if ((Input.GetKeyDown ("space"))) {
+			rb.AddForce(new Vector3(0, 0, 1));
+		}
 
+		Vector3 vel = rb.velocity;
+		vel.x = movementSpeed;
+		rb.velocity = vel;
 	}
 }
