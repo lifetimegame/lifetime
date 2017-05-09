@@ -16,12 +16,26 @@ public class PlayerBehavior : MonoBehaviour {
 	}
 
 	void Update () {
-		if ((Input.GetKeyDown ("space"))) {
-			rb.AddForce(new Vector3(0, 0, 1));
-		}
-
+		float f = 10.0f;
 		Vector3 vel = rb.velocity;
-		vel.x = movementSpeed;
-		rb.velocity = vel;
+		if ((Input.GetKeyDown ("space"))) {
+			
+		}
+		if ((Input.GetKeyDown ("w"))) {
+			Debug.Log("Press W");
+			vel.x -= f;
+		}
+		if ((Input.GetKeyDown ("s"))) {
+			vel.x += f;
+		}
+		if ((Input.GetKeyDown ("a"))) {
+			rb.AddForce(new Vector3(0, f, 0));
+		}
+		if ((Input.GetKeyDown ("d"))) {
+			rb.AddForce(new Vector3(0, -f, 0));
+		}
+//		Vector3 vel = rb.velocity;
+//		vel.x = movementSpeed;
+//		rb.velocity = vel;
 	}
 }
