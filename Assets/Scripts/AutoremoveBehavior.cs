@@ -16,7 +16,6 @@ public class AutoremoveBehavior : MonoBehaviour {
 	void Update () {
 		
 		if (Vector3.Distance(player.transform.position, transform.position) > killDistance) {
-			Debug.Log("Destroy obsticle");
 			Destroy (this.gameObject);
 		}
 	}
