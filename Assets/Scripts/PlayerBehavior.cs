@@ -19,17 +19,27 @@ public class PlayerBehavior : MonoBehaviour {
 	void Update () {
 		float distanceX = transform.position.x;
 
-		CharacterController controller = GetComponent<CharacterController> ();
-		Vector3 movementX = new Vector3(1.0f * movementSpeed, 0.0f, 0.0f);
+//		CharacterController controller = GetComponent<CharacterController> ();
+//		Vector3 movementX = new Vector3(1.0f * movementSpeed, 0.0f, 0.0f);
 
 		targetZ = Mathf.Sin (distanceX / freq) * amplitude;
-		Vector3 movementZ = new Vector3(0.0f, 0.0f, targetZ - transform.position.z);
+//		Vector3 movementZ = new Vector3(0.0f, 0.0f, targetZ - transform.position.z);
 //		Vector3 movementZ = new Vector3(0.0f, 0.0f, targetZ);
-		Vector3 movementTotal = movementX + movementZ;
+//		Vector3 movementTotal = movementX + movementZ;
 
+//		Vector3 pos = transform.position;
+//		pos.x = pos.x + movementSpeed * Time.deltaTime;
+//		transform.position = pos;
+		Rigidbody rb = GetComponent<Rigidbody>();
+		float movementZ = targetZ - transform.position.z;
+
+		Vector3 vel = rb.velocity;
+		vel.x = movementSpeed;
+		vel.z = movementZ;
+		rb.velocity = vel;
 //		Debug.Log ("X: " + movementX + ", Z: " + movementZ + ", Total: " + movementTotal);
 
-		controller.SimpleMove (movementTotal);
+//		controller.SimpleMove (movementTotal);
 
 
 	}

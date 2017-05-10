@@ -34,6 +34,7 @@ public class LevelManager : MonoBehaviour {
 	private int ib = 0;
 	private GameObject[] obstacles;
 	private GameObject[] bigObstacles;
+	private GameObject[] backgroundObjects;
 
 	public float backgroundCubeInterval = 10.0f;
 	public float backgroundCubeDistance = 128.0f;
@@ -53,6 +54,7 @@ public class LevelManager : MonoBehaviour {
 		player = GameObject.FindWithTag("Player");
 		obstacles = Resources.LoadAll<GameObject>("Obstacles");
 		bigObstacles = Resources.LoadAll<GameObject>("Big Obstacles");
+		backgroundObjects = Resources.LoadAll<GameObject>("BackgroundObjects");
 
 		foreach (int i in Enumerable.Range(0, (int)(250/backgroundCubeInterval))) {
 			createBackgroundCubes(-i * backgroundCubeInterval);
@@ -77,7 +79,9 @@ public class LevelManager : MonoBehaviour {
 		float colD = 0.25f;
 		float lposD = 3.0f;
 
-		GameObject g = Instantiate<GameObject>(backgroundCubePrefab);
+		GameObject g = Instantiate<GameObject>(
+			backgroundObjects[UnityEngine.Random.Range(0, backgroundObjects.Count())]
+		);
 		Vector3 pos = basePos;
 		Quaternion rot = g.transform.localRotation;
 		pos.x = refX + backgroundCubeDistance;
@@ -87,8 +91,12 @@ public class LevelManager : MonoBehaviour {
 		pos.x = pos.x + UnityEngine.Random.Range(-randLimits.y, randLimits.y);
 
 		g.transform.rotation = UnityEngine.Random.rotation;
-		float s = UnityEngine.Random.Range (5, 15);
-		g.transform.localScale = new Vector3(s, s, s);
+		float s = UnityEngine.Random.Range (0.5f, 2.0f);
+		g.transform.localScale = new Vector3(
+			g.transform.lossyScale.x * s, 
+			g.transform.lossyScale.y * s, 
+			g.transform.lossyScale.z * s );
+	
 		g.transform.position = pos;
 
 		if (sinceBackgroundLight >= backgroundlightInterval) {
@@ -144,15 +152,19 @@ public class LevelManager : MonoBehaviour {
 
 	void Update () {
 		distanceTravelled = player.transform.position.x;
+
 		if (distanceTravelled - lastObstacleX >= obstacleInterval) {
-			if (sinceBigObstacle >= bigObstacleInterval) {
-				createBigObstacle();
-				sinceBigObstacle = 0;
-			} else {
+			lastObstacleX = distanceTravelled;
+
+//			if (sinceBigObstacle >= bigObstacleInterval) {
+//				createBigObstacle();
+//				sinceBigObstacle = 0;
+//				lastObstacleX += 3 * groundLen;
+//			} else {
 				createObstacle (player.transform.position.x);
 				sinceBigObstacle++;
-			}
-			lastObstacleX = distanceTravelled;
+//			}
+//			lastObstacleX = distanceTravelled;
 		}
 		if (distanceTravelled - lastbackgroundCubeX >= backgroundCubeInterval) {
 			createBackgroundCubes (player.transform.position.x);
