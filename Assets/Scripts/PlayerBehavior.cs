@@ -7,7 +7,7 @@ public class PlayerBehavior : MonoBehaviour {
 	public float movementSpeed = 10.0f;
 
 	public float freq = 5.0f;
-	public float amplitude = 3.0f;
+	public float amplitude = 100.0f;
 
 	private float totalTime = 0.0f;
 	private float targetZ = 0.0f;
@@ -18,18 +18,9 @@ public class PlayerBehavior : MonoBehaviour {
 
 	void Update () {
 		float distanceX = transform.position.x;
-
-//		CharacterController controller = GetComponent<CharacterController> ();
-//		Vector3 movementX = new Vector3(1.0f * movementSpeed, 0.0f, 0.0f);
+		float distanceZ = transform.position.z;
 
 		targetZ = Mathf.Sin (distanceX / freq) * amplitude;
-//		Vector3 movementZ = new Vector3(0.0f, 0.0f, targetZ - transform.position.z);
-//		Vector3 movementZ = new Vector3(0.0f, 0.0f, targetZ);
-//		Vector3 movementTotal = movementX + movementZ;
-
-//		Vector3 pos = transform.position;
-//		pos.x = pos.x + movementSpeed * Time.deltaTime;
-//		transform.position = pos;
 		Rigidbody rb = GetComponent<Rigidbody>();
 		float movementZ = targetZ - transform.position.z;
 
@@ -37,10 +28,11 @@ public class PlayerBehavior : MonoBehaviour {
 		vel.x = movementSpeed;
 		vel.z = movementZ;
 		rb.velocity = vel;
-//		Debug.Log ("X: " + movementX + ", Z: " + movementZ + ", Total: " + movementTotal);
 
-//		controller.SimpleMove (movementTotal);
-
+		Quaternion rot = transform.rotation;
+		rot.x = -(distanceZ / amplitude) * 0.5f;
+//		rot.z = -(distanceZ / amplitude);
+		transform.rotation = rot;
 
 	}
 }

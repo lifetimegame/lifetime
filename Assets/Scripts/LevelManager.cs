@@ -21,7 +21,7 @@ public class LevelManager : MonoBehaviour {
 
 	private GameObject player;
 
-	public int bigObstacleInterval = 3;
+	public int envObstavleInterval = 5;
 
 	public float obstacleInterval = 10.0f;
 	public float obstacleSpawnDistance = 32.0f;
@@ -31,9 +31,9 @@ public class LevelManager : MonoBehaviour {
 	private float lastbackgroundCubeX = 0.0f;
 
 	private int i = 0;
-	private int ib = 0;
+	private int ie= 0;
 	private GameObject[] obstacles;
-	private GameObject[] bigObstacles;
+	private GameObject[] envObstacles;
 	private GameObject[] backgroundObjects;
 
 	public float backgroundCubeInterval = 10.0f;
@@ -46,19 +46,14 @@ public class LevelManager : MonoBehaviour {
 	private int lastGround = 0;
 	private bool nextGround1 = false;
 
-	private int sinceBigObstacle = 0;
+	private int sinceEnvObstacle = 0;
 
 	void Start () {
 		groundLen = groundPrefab1.transform.localScale.x;
 
 		player = GameObject.FindWithTag("Player");
 		obstacles = Resources.LoadAll<GameObject>("Obstacles");
-		bigObstacles = Resources.LoadAll<GameObject>("Big Obstacles");
-		backgroundObjects = Resources.LoadAll<GameObject>("BackgroundObjects");
-
-		foreach (int i in Enumerable.Range(0, (int)(250/backgroundCubeInterval))) {
-			createBackgroundCubes(-i * backgroundCubeInterval);
-		}
+		envObstacles = Resources.LoadAll<GameObject>("EnvironmentObstacles");
 
 		foreach (int i in Enumerable.Range(0, groundFrontCount)) {
 			createGround (i);
@@ -70,84 +65,49 @@ public class LevelManager : MonoBehaviour {
 		GameObject g = Instantiate<GameObject>(nextGround1?groundPrefab1:groundPrefab2);
 		g.transform.position = new Vector3 (groundLen * i, 0.0f, 0.0f);
 		nextGround1 = !nextGround1;
-		sinceBigObstacle++;
 
 	}
 
 	void createbgcube(float refX, Vector3 basePos, Vector3 randLimits) {
-		float posD = 20f;
-		float colD = 0.25f;
-		float lposD = 3.0f;
-
-		GameObject g = Instantiate<GameObject>(
-			backgroundObjects[UnityEngine.Random.Range(0, backgroundObjects.Count())]
-		);
-		Vector3 pos = basePos;
-		Quaternion rot = g.transform.localRotation;
-		pos.x = refX + backgroundCubeDistance;
-
-		pos.y = pos.y + UnityEngine.Random.Range(-randLimits.x, randLimits.x);
-		pos.z = pos.z + UnityEngine.Random.Range(-randLimits.z, randLimits.z);
-		pos.x = pos.x + UnityEngine.Random.Range(-randLimits.y, randLimits.y);
-
-		g.transform.rotation = UnityEngine.Random.rotation;
-		float s = UnityEngine.Random.Range (0.5f, 2.0f);
-		g.transform.localScale = new Vector3(
-			g.transform.lossyScale.x * s, 
-			g.transform.lossyScale.y * s, 
-			g.transform.lossyScale.z * s );
-	
-		g.transform.position = pos;
-
-		if (sinceBackgroundLight >= backgroundlightInterval) {
-			GameObject l = Instantiate<GameObject>(backgroundLightPrefab);
-			Vector3 lpos = g.transform.position;
-			l.transform.position = g.transform.position;
-			lpos.y = lpos.y + UnityEngine.Random.Range(-lposD, lposD);
-			lpos.z = lpos.z + UnityEngine.Random.Range(-lposD, lposD);
-			lpos.x = lpos.x + UnityEngine.Random.Range(-lposD, lposD);
-			l.transform.position = lpos;
-			Light lightComp = l.GetComponent<Light> ();
-			Color col = lightComp.color;
-			col.r = col.r + UnityEngine.Random.Range(-colD, colD);
-			col.g = col.g + UnityEngine.Random.Range(-colD, colD);
-			col.b = col.b + UnityEngine.Random.Range(-colD, colD);
-			lightComp.color = col;
-		}
 
 	}
-
-	void createBigObstacle() {
-		Debug.Log ("Create Big Obstacle");
-		ib++;
-		if (ib >= bigObstacles.Count ()) {
-			ib = 0;
-		}
-		GameObject g = Instantiate<GameObject>(bigObstacles[ib]);
-		Debug.Log (g.name);
-		Vector3 pos = new Vector3(0.0f, 0.0f, 0.0f);
-		pos.x = (lastGround+1) * groundLen;
-		g.transform.position = pos;
-		lastGround = lastGround + 3;
-	}
-
+		
 	void createBackgroundCubes(float refX) {
-		createbgcube (refX, backgroundCubeBasePos1, backgroundCubeRandPosLimits1);
-		createbgcube (refX, backgroundCubeBasePos2, backgroundCubeRandPosLimits2);
-		sinceBackgroundLight++;
+		
 	}
 
 	GameObject createObstacle(float refX) {
-		i++;
-		if (i >= obstacles.Count ()) {
-			i = 0;
+		if (sinceEnvObstacle >= envObstavleInterval) {
+			ie++;
+			if (ie >= obstacles.Count ()) {
+				ie = 0;
+			}
+			int rand = UnityEngine.Random.Range(0, envObstacles.Count()-1);
+			GameObject g = Instantiate<GameObject>(envObstacles[i]);
+			Debug.Log ("Created env obstacle " + g.name);
+
+			Vector3 pos = g.transform.position;
+			pos.x = refX + obstacleSpawnDistance;
+			g.transform.position = pos;
+			sinceEnvObstacle = 0;
+			return g;
+		} else {
+			i++;
+			if (i >= obstacles.Count ()) {
+				i = 0;
+			}
+			int rand = UnityEngine.Random.Range(0, obstacles.Count()-1);
+			GameObject g = Instantiate<GameObject>(obstacles[i]);
+			Debug.Log ("Created obstacle " + g.name);
+
+			Vector3 pos = g.transform.position;
+			pos.x = refX + obstacleSpawnDistance;
+			pos.z =  UnityEngine.Random.Range(0.0f, 20.0f) - 10.0f;
+			g.transform.position = pos;
+			sinceEnvObstacle++;
+			return g;
 		}
-		int rand = UnityEngine.Random.Range(0, obstacles.Count()-1);
-		GameObject g = Instantiate<GameObject>(obstacles[i]);
-		Vector3 pos = g.transform.position;
-		pos.x = refX + obstacleSpawnDistance;
-		g.transform.position = pos;
-		return g;
+
 	}
 
 	void Update () {
@@ -155,16 +115,7 @@ public class LevelManager : MonoBehaviour {
 
 		if (distanceTravelled - lastObstacleX >= obstacleInterval) {
 			lastObstacleX = distanceTravelled;
-
-//			if (sinceBigObstacle >= bigObstacleInterval) {
-//				createBigObstacle();
-//				sinceBigObstacle = 0;
-//				lastObstacleX += 3 * groundLen;
-//			} else {
-				createObstacle (player.transform.position.x);
-				sinceBigObstacle++;
-//			}
-//			lastObstacleX = distanceTravelled;
+			createObstacle (player.transform.position.x);
 		}
 		if (distanceTravelled - lastbackgroundCubeX >= backgroundCubeInterval) {
 			createBackgroundCubes (player.transform.position.x);
