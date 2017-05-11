@@ -13,40 +13,32 @@ public class LevelManager : MonoBehaviour {
 	public GameObject groundPrefab2;
 	public int groundFrontCount = 10;
 
-	public Vector3 backgroundCubeBasePos1;
-	public Vector3 backgroundCubeRandPosLimits1;
-
-	public Vector3 backgroundCubeBasePos2;
-	public Vector3 backgroundCubeRandPosLimits2;
-
 	private GameObject player;
 
 	public int envObstavleInterval = 5;
 
 	public float obstacleInterval = 10.0f;
+	public float rupeeInterval = 5.0f;
+
 	public float obstacleSpawnDistance = 32.0f;
 
 	private float distanceTravelled = 0.0f;
 	private float lastObstacleX = 0.0f;
-	private float lastbackgroundCubeX = 0.0f;
 
 	private int i = 0;
-	private int ie= 0;
+	private int ie = 0;
+	private int ir = 0;
+
 	private GameObject[] obstacles;
 	private GameObject[] envObstacles;
-	private GameObject[] backgroundObjects;
-
-	public float backgroundCubeInterval = 10.0f;
-	public float backgroundCubeDistance = 128.0f;
-
-	public int backgroundlightInterval = 10;
-	public int sinceBackgroundLight = 0;
+	private GameObject[] rupees;
 
 	private float groundLen = 0.0f;
 	private int lastGround = 0;
 	private bool nextGround1 = false;
 
 	private int sinceEnvObstacle = 0;
+	private int sinceRupee = 0;
 
 	void Start () {
 		groundLen = groundPrefab1.transform.localScale.x;
@@ -54,6 +46,7 @@ public class LevelManager : MonoBehaviour {
 		player = GameObject.FindWithTag("Player");
 		obstacles = Resources.LoadAll<GameObject>("Obstacles");
 		envObstacles = Resources.LoadAll<GameObject>("EnvironmentObstacles");
+		rupees = Resources.LoadAll<GameObject>("Jewls");
 
 		foreach (int i in Enumerable.Range(0, groundFrontCount)) {
 			createGround (i);
@@ -77,36 +70,48 @@ public class LevelManager : MonoBehaviour {
 	}
 
 	GameObject createObstacle(float refX) {
+		GameObject g;
 		if (sinceEnvObstacle >= envObstavleInterval) {
 			ie++;
-			if (ie >= obstacles.Count ()) {
+			if (ie >= envObstacles.Count ()) {
 				ie = 0;
 			}
 			int rand = UnityEngine.Random.Range(0, envObstacles.Count()-1);
-			GameObject g = Instantiate<GameObject>(envObstacles[i]);
-			Debug.Log ("Created env obstacle " + g.name);
+			g = Instantiate<GameObject>(envObstacles[ie]);
+//			Debug.Log ("Created env obstacle " + g.name);
 
 			Vector3 pos = g.transform.position;
 			pos.x = refX + obstacleSpawnDistance;
 			g.transform.position = pos;
 			sinceEnvObstacle = 0;
-			return g;
+		} else if (sinceRupee >= rupeeInterval) {
+			ir++;
+			if (ir >= rupees.Count ()) {
+				ir = 0;
+			}
+			int rand = UnityEngine.Random.Range(0, rupees.Count()-1);
+			g = Instantiate<GameObject>(rupees[ir]);
+			Vector3 pos = g.transform.position;
+			pos.x = refX + obstacleSpawnDistance;
+			pos.z =  UnityEngine.Random.Range(0.0f, 20.0f) - 10.0f;
+			g.transform.position = pos;
+			sinceRupee = 0;
 		} else {
 			i++;
 			if (i >= obstacles.Count ()) {
 				i = 0;
 			}
 			int rand = UnityEngine.Random.Range(0, obstacles.Count()-1);
-			GameObject g = Instantiate<GameObject>(obstacles[i]);
-			Debug.Log ("Created obstacle " + g.name);
+			g = Instantiate<GameObject>(obstacles[i]);
 
 			Vector3 pos = g.transform.position;
 			pos.x = refX + obstacleSpawnDistance;
 			pos.z =  UnityEngine.Random.Range(0.0f, 20.0f) - 10.0f;
 			g.transform.position = pos;
-			sinceEnvObstacle++;
-			return g;
 		}
+		sinceEnvObstacle++;
+		sinceRupee++;
+		return g;
 
 	}
 
@@ -116,10 +121,6 @@ public class LevelManager : MonoBehaviour {
 		if (distanceTravelled - lastObstacleX >= obstacleInterval) {
 			lastObstacleX = distanceTravelled;
 			createObstacle (player.transform.position.x);
-		}
-		if (distanceTravelled - lastbackgroundCubeX >= backgroundCubeInterval) {
-			createBackgroundCubes (player.transform.position.x);
-			lastbackgroundCubeX = distanceTravelled;
 		}
 
 		if ((lastGround-groundFrontCount) * groundLen <= distanceTravelled) {
