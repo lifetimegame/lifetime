@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 
 public class PlayerBehavior : MonoBehaviour {
 	public float movementSpeed = 10.0f;
@@ -19,36 +20,42 @@ public class PlayerBehavior : MonoBehaviour {
 	private GameObject collisionEffect;
 	private GameObject pointEffect;
 
+	private LevelManager levelManager;
+
 	void Start () {
 		collisionEffect = GameObject.Find("CollisionEffect");
+		levelManager = GameObject.Find("LevelManager").GetComponent<LevelManager>();
 		pointEffect = GameObject.Find("PointEffect");
 	}
 
 	void Update () {
+		if (!levelManager.inMenu) {
+			float distanceX = transform.position.x;
+			float distanceZ = transform.position.z;
 
-		float distanceX = transform.position.x;
-		float distanceZ = transform.position.z;
+			//score = (int) internalScore;
 
-		//score = (int) internalScore;
+			targetZ = Mathf.Sin (distanceX / freq) * amplitude;
+			Rigidbody rb = GetComponent<Rigidbody>();
+			float movementZ = targetZ - transform.position.z;
 
-		targetZ = Mathf.Sin (distanceX / freq) * amplitude;
-		Rigidbody rb = GetComponent<Rigidbody>();
-		float movementZ = targetZ - transform.position.z;
+			Vector3 vel = rb.velocity;
+			vel.x = movementSpeed;
+			vel.z = movementZ;
+			rb.velocity = vel;
 
-		Vector3 vel = rb.velocity;
-		vel.x = movementSpeed;
-		vel.z = movementZ;
-		rb.velocity = vel;
+			Vector3 pos = transform.position;
+			pos.z = targetZ;
+			transform.position = pos;
 
-		Vector3 pos = transform.position;
-		pos.z = targetZ;
-		transform.position = pos;
+			Quaternion rot = transform.rotation;
+			rot.x = -(distanceZ / amplitude) * 0.5f;
 
-		Quaternion rot = transform.rotation;
-		rot.x = -(distanceZ / amplitude) * 0.5f;
-
-		transform.rotation = rot;
-
+			transform.rotation = rot;
+			if (hp <= 0.0f) {
+				SceneManager.LoadScene (SceneManager.GetActiveScene ().name);
+			}
+		}
 	}
 
 	void OnCollisionEnter(Collision collision) {
@@ -65,7 +72,7 @@ public class PlayerBehavior : MonoBehaviour {
 			}
 			combo = 1.0f;
 			hp -= 0.1f;
-			Destroy (collision.gameObject);
+//			Destroy (collision.gameObject);
 			g.transform.position = collision.gameObject.transform.position;
 		} else if (collision.gameObject.layer == LayerMask.NameToLayer ("Rupee")) {
 			combo += 1.0f;

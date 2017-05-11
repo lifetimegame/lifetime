@@ -8,6 +8,7 @@ using System.Linq;
 public class LevelManager : MonoBehaviour {
 	public GameObject backgroundCubePrefab;
 	public GameObject backgroundLightPrefab;
+	public bool inMenu = true;
 
 	public GameObject groundPrefab1;
 	public GameObject groundPrefab2;
@@ -51,6 +52,9 @@ public class LevelManager : MonoBehaviour {
 	private float distancePointInterval = 5.0f;
 	private float distancePointAmount = 1f;
 
+	private GameObject hud;
+	private GameObject menu;
+
 	void Start () {
 		groundLen = groundPrefab1.transform.localScale.x;
 
@@ -60,6 +64,10 @@ public class LevelManager : MonoBehaviour {
 		obstacles = Resources.LoadAll<GameObject>("Obstacles");
 		envObstacles = Resources.LoadAll<GameObject>("EnvironmentObstacles");
 		rupees = Resources.LoadAll<GameObject>("Jewls");
+
+		hud = GameObject.Find("Hud");
+		menu = GameObject.Find("Menu");
+		hud.SetActive (false);
 
 		foreach (int i in Enumerable.Range(0, groundFrontCount)) {
 			createGround (i);
@@ -134,27 +142,35 @@ public class LevelManager : MonoBehaviour {
 	}
 
 	void Update () {
-		distanceTravelled = player.transform.position.x;
+		if (!inMenu) {
+			distanceTravelled = player.transform.position.x;
 
-		if (distanceTravelled - lastObstacleX >= obstacleInterval) {
-			lastObstacleX = distanceTravelled;
-			createObstacle (player.transform.position.x);
-		}
+			if (distanceTravelled - lastObstacleX >= obstacleInterval) {
+				lastObstacleX = distanceTravelled;
+				createObstacle (player.transform.position.x);
+			}
 
-		if ((lastGround-groundFrontCount) * groundLen <= distanceTravelled) {
-			createGround (lastGround);
-			lastGround++;
-		}
+			if ((lastGround-groundFrontCount) * groundLen <= distanceTravelled) {
+				createGround (lastGround);
+				lastGround++;
+			}
 
-		if (distanceTravelled - lastSpeedup >= speedupInterval) {
-			speedup ();
-			lastSpeedup = distanceTravelled;
+			if (distanceTravelled - lastSpeedup >= speedupInterval) {
+				speedup ();
+				lastSpeedup = distanceTravelled;
+			}
+			if (distanceTravelled - lastDistancePoint >= distancePointInterval) {
+				pb.score += (int) (distancePointAmount*pb.combo);
+				lastDistancePoint = distanceTravelled;
+			}
+			pb.movementSpeed = baseSpeed;
+		} else if (Input.GetKey("space")) {
+			Debug.Log ("Start game");
+			inMenu = false;
+			hud.SetActive (true);
+			menu.SetActive (false);
 		}
-		if (distanceTravelled - lastDistancePoint >= distancePointInterval) {
-			pb.score += (int) (distancePointAmount*pb.combo);
-			lastDistancePoint = distanceTravelled;
-		}
-		pb.movementSpeed = baseSpeed;
+			
 	}
 
 }
