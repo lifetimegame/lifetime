@@ -29,7 +29,7 @@ public class PlayerBehavior : MonoBehaviour {
 		float distanceX = transform.position.x;
 		float distanceZ = transform.position.z;
 
-		score = (int) ((distanceX)/5.0f) + internalScore;
+		//score = (int) internalScore;
 
 		targetZ = Mathf.Sin (distanceX / freq) * amplitude;
 		Rigidbody rb = GetComponent<Rigidbody>();
@@ -67,13 +67,16 @@ public class PlayerBehavior : MonoBehaviour {
 			hp -= 0.1f;
 			Destroy (collision.gameObject);
 			g.transform.position = collision.gameObject.transform.position;
-		}
-		if (collision.gameObject.layer == LayerMask.NameToLayer ("Rupee")) {
+		} else if (collision.gameObject.layer == LayerMask.NameToLayer ("Rupee")) {
 			combo += 1.0f;
 			GameObject g = Instantiate<GameObject>(pointEffect);
 			g.transform.position = collision.gameObject.transform.position;
 			Destroy (collision.gameObject);
-			internalScore += (int) (100 * combo);
+			score += (int) (100 * combo);
+		} else if (collision.gameObject.layer == LayerMask.NameToLayer ("EnvObstacles")) {
+			GameObject g = Instantiate<GameObject>(collisionEffect);
+			g.transform.position = collision.gameObject.transform.position;
+			hp -= 0.1f;
 		}
 	}
 }

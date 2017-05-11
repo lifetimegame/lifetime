@@ -14,6 +14,8 @@ public class LevelManager : MonoBehaviour {
 	public int groundFrontCount = 10;
 
 	private GameObject player;
+	private PlayerBehavior pb;
+	public float baseSpeed;
 
 	public int envObstavleInterval = 5;
 
@@ -40,10 +42,21 @@ public class LevelManager : MonoBehaviour {
 	private int sinceEnvObstacle = 0;
 	private int sinceRupee = 0;
 
+//	private float speedFactor = 1.0f;
+	private float speedupAmount = 0.01f;
+	private float lastSpeedup = 0.0f;
+	private float speedupInterval = 100.0f;
+
+	private float lastDistancePoint = 0.0f;
+	private float distancePointInterval = 5.0f;
+	private float distancePointAmount = 1f;
+
 	void Start () {
 		groundLen = groundPrefab1.transform.localScale.x;
 
 		player = GameObject.FindWithTag("Player");
+		pb = player.GetComponent<PlayerBehavior> ();
+
 		obstacles = Resources.LoadAll<GameObject>("Obstacles");
 		envObstacles = Resources.LoadAll<GameObject>("EnvironmentObstacles");
 		rupees = Resources.LoadAll<GameObject>("Jewls");
@@ -78,7 +91,6 @@ public class LevelManager : MonoBehaviour {
 			}
 			int rand = UnityEngine.Random.Range(0, envObstacles.Count()-1);
 			g = Instantiate<GameObject>(envObstacles[ie]);
-//			Debug.Log ("Created env obstacle " + g.name);
 
 			Vector3 pos = g.transform.position;
 			pos.x = refX + obstacleSpawnDistance;
@@ -115,6 +127,12 @@ public class LevelManager : MonoBehaviour {
 
 	}
 
+	void speedup() {
+		Debug.Log ("Speedup");
+		baseSpeed += speedupAmount;
+
+	}
+
 	void Update () {
 		distanceTravelled = player.transform.position.x;
 
@@ -128,6 +146,15 @@ public class LevelManager : MonoBehaviour {
 			lastGround++;
 		}
 
+		if (distanceTravelled - lastSpeedup >= speedupInterval) {
+			speedup ();
+			lastSpeedup = distanceTravelled;
+		}
+		if (distanceTravelled - lastDistancePoint >= distancePointInterval) {
+			pb.score += (int) (distancePointAmount*pb.combo);
+			lastDistancePoint = distanceTravelled;
+		}
+		pb.movementSpeed = baseSpeed;
 	}
 
 }

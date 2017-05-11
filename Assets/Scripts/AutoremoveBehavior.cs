@@ -19,8 +19,5 @@ public class AutoremoveBehavior : MonoBehaviour {
 		} else if (transform.position.y < -100.0f) {
 			Destroy (this.gameObject);
 		}
-//		if (Vector3.Distance(player.transform.position, transform.position) > killDistance) {
-//			Destroy (this.gameObject);
-//		}
 	}
 }
