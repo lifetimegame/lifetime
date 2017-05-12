@@ -58,9 +58,12 @@ public class LevelManager : MonoBehaviour {
 	private GameObject endScreen;
 
 	private bool inEndScreen = false;
+    private bool startEndScreen = true;
+    private float endScreenTime = 0.0f;
 
-	void Start () {
-		groundLen = groundPrefab1.transform.localScale.x;
+    void Start () {
+        GetComponent<Hv_SurfOfLifeSimpleEngine_AudioLib>().SendEvent(Hv_SurfOfLifeSimpleEngine_AudioLib.Event.Start);
+        groundLen = groundPrefab1.transform.localScale.x;
 
 		player = GameObject.FindWithTag("Player");
 		pb = player.GetComponent<PlayerBehavior> ();
@@ -148,7 +151,15 @@ public class LevelManager : MonoBehaviour {
 
 	void Update () {
 		if(inEndScreen) {
-			if (Input.GetKey ("space")) {
+            if (startEndScreen) {
+                startEndScreen = false;
+                GetComponent<Hv_SurfOfLifeSimpleEngine_AudioLib>().SendEvent(Hv_SurfOfLifeSimpleEngine_AudioLib.Event.Gameover);
+            }
+            endScreenTime += Time.deltaTime;
+            if(endScreenTime >= 3.5f) {
+                GetComponent<Hv_SurfOfLifeSimpleEngine_AudioLib>().SendEvent(Hv_SurfOfLifeSimpleEngine_AudioLib.Event.Stop);
+            }
+            if (Input.GetKey ("space")) {
 				SceneManager.LoadScene (SceneManager.GetActiveScene ().name);
 			}
 		} else if (!inMenu) {

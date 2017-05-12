@@ -21,12 +21,15 @@ public class PlayerBehavior : MonoBehaviour {
 	private GameObject pointEffect;
 
 	private LevelManager levelManager;
+    private Hv_SurfOfLifeSimpleEngine_AudioLib audio;
 
 	void Start () {
 		collisionEffect = GameObject.Find("CollisionEffect");
 		levelManager = GameObject.Find("LevelManager").GetComponent<LevelManager>();
 		pointEffect = GameObject.Find("PointEffect");
-	}
+        audio = GameObject.Find("LevelManager").GetComponent<Hv_SurfOfLifeSimpleEngine_AudioLib>();
+
+    }
 
 	void Update () {
 		if (!levelManager.inMenu) {
@@ -71,16 +74,25 @@ public class PlayerBehavior : MonoBehaviour {
 			hp -= 0.1f;
 //			Destroy (collision.gameObject);
 			g.transform.position = collision.gameObject.transform.position;
-		} else if (collision.gameObject.layer == LayerMask.NameToLayer ("Rupee")) {
+            audio.SendEvent(Hv_SurfOfLifeSimpleEngine_AudioLib.Event.Damage);
+
+        } else if (collision.gameObject.layer == LayerMask.NameToLayer ("Rupee")) {
 			combo += 1.0f;
+            if(combo == 4.0f) {
+                audio.SendEvent(Hv_SurfOfLifeSimpleEngine_AudioLib.Event.Intenselayer);
+            }
 			GameObject g = Instantiate<GameObject>(pointEffect);
 			g.transform.position = collision.gameObject.transform.position;
 			Destroy (collision.gameObject);
 			score += (int) (100 * combo);
-		} else if (collision.gameObject.layer == LayerMask.NameToLayer ("EnvObstacles")) {
+            audio.SendEvent(Hv_SurfOfLifeSimpleEngine_AudioLib.Event.Collect);
+        } else if (collision.gameObject.layer == LayerMask.NameToLayer ("EnvObstacles")) {
 			GameObject g = Instantiate<GameObject>(collisionEffect);
 			g.transform.position = collision.gameObject.transform.position;
 			hp -= 0.1f;
-		}
+            combo = 1.0f;
+            audio.SendEvent(Hv_SurfOfLifeSimpleEngine_AudioLib.Event.Damage);
+            audio.SendEvent(Hv_SurfOfLifeSimpleEngine_AudioLib.Event.Action);
+        }
 	}
 }
