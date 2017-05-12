@@ -83,6 +83,14 @@ public class LevelManager : MonoBehaviour {
 			createGround (i);
 			lastGround++;
 		}
+
+		float spawnX = -180.0f;
+		foreach (int i in Enumerable.Range(0, 10)) {
+			spawnX += obstacleInterval;
+			createObstacle (spawnX);
+		}
+
+
 	}
 
 	void createGround(int i) {
