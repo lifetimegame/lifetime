@@ -17,6 +17,9 @@ public class LevelManager : MonoBehaviour {
 	public GameObject groundPrefab2;
 	public int groundFrontCount = 10;
 
+	public GameObject bgLight;
+	public int untilBGLight = 5;
+
 	private GameObject player;
 	private PlayerBehavior pb;
 	public float baseSpeed;
@@ -59,7 +62,7 @@ public class LevelManager : MonoBehaviour {
 	private GameObject menu;
 	private GameObject endScreen;
 
-	private bool inEndScreen = false;
+	public bool inEndScreen = false;
     private bool startEndScreen = true;
     private float endScreenTime = 0.0f;
 
@@ -71,12 +74,12 @@ public class LevelManager : MonoBehaviour {
 		int rand = UnityEngine.Random.Range(0, obstacles.Count()-1);
 		GameObject g = Instantiate<GameObject>(obstacles[rand]);
 		Destroy (g.GetComponent<Rigidbody>());
-
-		g.transform.position = new Vector3 (
+		Vector3 pos = new Vector3 (
 			UnityEngine.Random.Range(-a, a) + x, 
 			UnityEngine.Random.Range(-30, 30),
 			UnityEngine.Random.Range(-20, 20) + z
 		);
+		g.transform.position = pos;
 		g.transform.rotation = UnityEngine.Random.rotation;
 		float r = UnityEngine.Random.Range(1, 2.0f);
 		g.transform.localScale = new Vector3 (
@@ -91,6 +94,12 @@ public class LevelManager : MonoBehaviour {
 //				rend.materials[i] = bgMaterial;
 //			}
 		}
+		if (untilBGLight <= 0) {
+			GameObject l = Instantiate<GameObject>(bgLight);
+			l.transform.position = pos;
+			untilBGLight = 5;
+		}
+		untilBGLight--;
 
 	
 	}
