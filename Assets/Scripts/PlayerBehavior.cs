@@ -92,7 +92,7 @@ public class PlayerBehavior : MonoBehaviour {
 			hp -= 0.1f;
             combo = 1.0f;
             audio.SendEvent(Hv_SurfOfLifeSimpleEngine_AudioLib.Event.Damage);
-            audio.SendEvent(Hv_SurfOfLifeSimpleEngine_AudioLib.Event.Action);
+//            audio.SendEvent(Hv_SurfOfLifeSimpleEngine_AudioLib.Event.Action);
         }
 	}
 }
