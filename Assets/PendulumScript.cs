@@ -17,7 +17,7 @@ public class PendulumScript : MonoBehaviour {
 	}
 	void OnCollisionEnter(Collision collision) {
 		if (collision.gameObject.layer == LayerMask.NameToLayer ("Hands")) {
-			GetComponent<Hv_SurfOfLifeSimpleEngine_AudioLib>().SendEvent(Hv_SurfOfLifeSimpleEngine_AudioLib.Event.Action);
+			GameObject.Find("LevelManager").GetComponent<Hv_SurfOfLifeSimpleEngine_AudioLib>().SendEvent(Hv_SurfOfLifeSimpleEngine_AudioLib.Event.Action);
 		}
 	}
 }
