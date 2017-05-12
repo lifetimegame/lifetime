@@ -136,9 +136,7 @@ public class LevelManager : MonoBehaviour {
 	}
 
 	void speedup() {
-		Debug.Log ("Speedup");
 		baseSpeed += speedupAmount;
-
 	}
 
 	void Update () {
