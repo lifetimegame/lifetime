@@ -52,9 +52,6 @@ public class PlayerBehavior : MonoBehaviour {
 			rot.x = -(distanceZ / amplitude) * 0.5f;
 
 			transform.rotation = rot;
-			if (hp <= 0.0f) {
-				SceneManager.LoadScene (SceneManager.GetActiveScene ().name);
-			}
 		}
 	}
 

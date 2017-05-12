@@ -4,6 +4,7 @@ using System;
 using UnityEngine;
 using UnityEngine.UI;
 using System.Linq;
+using UnityEngine.SceneManagement;
 
 public class LevelManager : MonoBehaviour {
 	public GameObject backgroundCubePrefab;
@@ -54,6 +55,9 @@ public class LevelManager : MonoBehaviour {
 
 	private GameObject hud;
 	private GameObject menu;
+	private GameObject endScreen;
+
+	private bool inEndScreen = false;
 
 	void Start () {
 		groundLen = groundPrefab1.transform.localScale.x;
@@ -67,7 +71,10 @@ public class LevelManager : MonoBehaviour {
 
 		hud = GameObject.Find("Hud");
 		menu = GameObject.Find("Menu");
+		endScreen = GameObject.Find("EndScreen");
+
 		hud.SetActive (false);
+		endScreen.SetActive (false);
 
 		foreach (int i in Enumerable.Range(0, groundFrontCount)) {
 			createGround (i);
@@ -140,7 +147,11 @@ public class LevelManager : MonoBehaviour {
 	}
 
 	void Update () {
-		if (!inMenu) {
+		if(inEndScreen) {
+			if (Input.GetKey ("space")) {
+				SceneManager.LoadScene (SceneManager.GetActiveScene ().name);
+			}
+		} else if (!inMenu) {
 			distanceTravelled = player.transform.position.x;
 
 			if (distanceTravelled - lastObstacleX >= obstacleInterval) {
@@ -162,7 +173,12 @@ public class LevelManager : MonoBehaviour {
 				lastDistancePoint = distanceTravelled;
 			}
 			pb.movementSpeed = baseSpeed;
-		} else if (Input.GetKey("space")) {
+
+			if (player.GetComponent<PlayerBehavior>().hp <= 0.0f) {
+				endScreen.SetActive (true);
+				inEndScreen = true;
+			}
+		} else if (inMenu && Input.GetKey("space")) {
 			Debug.Log ("Start game");
 			inMenu = false;
 			hud.SetActive (true);
